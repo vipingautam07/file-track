@@ -1,0 +1,110 @@
+# ==============================================================
+# docker-compose.yml — Kripanidhi Legal (Development / Staging)
+# ==============================================================
+# Usage:
+#   docker compose up --build          # start all services
+#   docker compose down -v             # stop and remove volumes
+#   docker compose logs -f backend     # tail backend logs
+# ==============================================================
+
+
+
+services:
+
+  # ── Redis (caching + Socket.IO adapter) ───────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: kl-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 128mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"          # expose for local debugging only — remove in prod
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 192M
+        reservations:
+          cpus: "0.10"
+          memory: 64M
+
+  # ── Backend (Node/Express API) ─────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: kl-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env.docker
+    environment:
+      # NODE_ENV set in .env.docker
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - "5000:5000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 20s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+
+  # ── Frontend (React SPA via Nginx) ────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: /api
+    container_name: kl-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64M
+        reservations:
+          cpus: "0.05"
+          memory: 16M
+
+volumes:
+  redis_data:
+    driver: local

@@ -1,0 +1,112 @@
+name: Uptime & Security Monitor
+
+on:
+  schedule:
+    # Uptime check every 15 minutes
+    - cron: '*/15 * * * *'
+    # Daily security audit at 02:00 UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+
+  # ──────────────────────────────────────────────────────────────
+  # Uptime check — runs every 15 minutes
+  # ──────────────────────────────────────────────────────────────
+  uptime-check:
+    name: Health Check
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '*/15 * * * *' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Ping /health endpoint
+        id: health
+        run: |
+          HTTP_STATUS=$(curl -s -o /tmp/health.json -w "%{http_code}" \
+            --max-time 10 \
+            "${{ secrets.PROD_HEALTH_URL }}/health")
+          
+          echo "status=$HTTP_STATUS" >> $GITHUB_OUTPUT
+          cat /tmp/health.json
+
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "::error::Health check FAILED — HTTP $HTTP_STATUS"
+            exit 1
+          fi
+
+          # Verify DB is OK in the response body
+          DB_STATUS=$(cat /tmp/health.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('db','unknown'))")
+          echo "db_status=$DB_STATUS" >> $GITHUB_OUTPUT
+          if [ "$DB_STATUS" != "ok" ]; then
+            echo "::error::Health check DEGRADED — DB status: $DB_STATUS"
+            exit 1
+          fi
+
+          echo "✅ Health check passed — HTTP $HTTP_STATUS, DB: $DB_STATUS"
+
+      - name: Alert on failure
+        if: failure()
+        run: |
+          # Send alert via Slack webhook or email — configure ALERT_WEBHOOK_URL secret
+          curl -s -X POST "${{ secrets.ALERT_WEBHOOK_URL }}" \
+            -H 'Content-Type: application/json' \
+            -d "{\"text\": \"🚨 *Kripanidhi Legal API is DOWN*\nHealth check failed at $(date -u)\nURL: ${{ secrets.PROD_HEALTH_URL }}/health\"}" \
+            || echo "Alert webhook not configured"
+
+  # ──────────────────────────────────────────────────────────────
+  # Daily security audit — runs at 02:00 UTC
+  # ──────────────────────────────────────────────────────────────
+  security-audit:
+    name: Daily Security Audit
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 2 * * *' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Backend npm audit
+        run: |
+          npm ci --prefer-offline
+          npm audit --audit-level=high --json > /tmp/audit-backend.json || true
+          VULNS=$(cat /tmp/audit-backend.json | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('metadata',{}).get('vulnerabilities',{}).get('high',0) + d.get('metadata',{}).get('vulnerabilities',{}).get('critical',0))")
+          echo "High/Critical vulnerabilities: $VULNS"
+          if [ "$VULNS" -gt "0" ]; then
+            echo "::warning::$VULNS high/critical vulnerabilities found in backend — run npm audit fix"
+          fi
+        working-directory: backend
+
+      - name: Frontend npm audit
+        run: |
+          npm ci --prefer-offline
+          npm audit --audit-level=high || true
+        working-directory: frontend
+
+      - name: Secret rotation reminder
+        run: |
+          # Check if JWT secrets look like the placeholder values
+          # (actual secret checking is done at deploy time — this is a reminder)
+          echo "🔐 Secret Rotation Reminder:"
+          echo "JWT_ACCESS_SECRET — rotate every 90 days"
+          echo "JWT_REFRESH_SECRET — rotate every 90 days"
+          echo "RESEND_API_KEY — audit usage monthly"
+          echo "SUPABASE_SERVICE_ROLE_KEY — rotate after personnel changes"
+          echo "SENTRY_DSN — review quarterly"
+          echo ""
+          echo "Last rotation should be documented in your team's runbook."
+
+      - name: Check for expired lockouts
+        run: |
+          echo "ℹ️  Run the Supabase function unlock_expired_accounts() if needed"
+          echo "SQL: SELECT unlock_expired_accounts();"
+
+      - name: Audit log review reminder
+        run: |
+          echo "📋 Daily Audit Log Review:"
+          echo "Query: SELECT action, COUNT(*) FROM audit_logs WHERE created_at > NOW() - INTERVAL '24h' GROUP BY action ORDER BY count DESC;"
+          echo "Check for: unusual read_file_detail spikes, repeated failed logins, unexpected role changes"

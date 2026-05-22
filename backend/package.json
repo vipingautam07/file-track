@@ -1,0 +1,42 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@sentry/node": "^10.53.1",
+    "@socket.io/redis-adapter": "^8.3.0",
+    "@supabase/supabase-js": "^2.106.0",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^17.4.2",
+    "express": "^4.22.2",
+    "express-async-errors": "^3.1.1",
+    "express-prometheus-middleware": "^1.2.0",
+    "express-rate-limit": "^8.5.2",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.1.0",
+    "ioredis": "^5.10.1",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.10.1",
+    "multer": "^2.1.1",
+    "nodemailer": "^8.0.7",
+    "pg": "^8.21.0",
+    "resend": "^6.12.3",
+    "socket.io": "^4.8.3",
+    "uuid": "^14.0.0",
+    "winston": "^3.19.0",
+    "ws": "^8.20.1"
+  }
+}

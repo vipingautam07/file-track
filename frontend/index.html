@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kripanidhi Legal Services — File Tracking Portal</title>
+    <meta name="description" content="Secure loan file tracking portal for Kripanidhi Legal Services Pvt Ltd, partnered with Bank." />
+
+    <!-- Robots: this is an internal portal — do NOT index -->
+    <meta name="robots" content="noindex, nofollow" />
+
+    <!--
+      Content Security Policy (defence-in-depth alongside Nginx/Helmet CSP).
+      Vite injects hashed <script type="module"> tags at build time, so we
+      cannot use a strict nonce here. The production Nginx config enforces
+      a tighter CSP at the HTTP header level (which takes precedence).
+    -->
+    <meta http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        script-src 'self';
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' data: https://yiqyfyyxdnyqjbckiria.supabase.co;
+        connect-src 'self' https://yiqyfyyxdnyqjbckiria.supabase.co wss:;
+        font-src 'self' https://fonts.gstatic.com;
+        frame-src 'none';
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+      " />
+
+    <!-- Prevent MIME-type sniffing -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+
+    <!-- No referrer to external domains -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!--
+      Google Fonts: preconnect for performance.
+      Note: we use preconnect only (no actual font <link>) because fonts are
+      loaded via CSS. If you add a <link rel="stylesheet"> to fonts.googleapis.com,
+      add the SRI hash here:
+      integrity="sha384-..." crossorigin="anonymous"
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link rel="icon" type="image/x-icon" href="/logo.jpg" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
