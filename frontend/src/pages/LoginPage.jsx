@@ -55,9 +55,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-sans">
-      <div className="flex flex-1">
-      {/* Visual Left Branding Panel (Desktop Only) */}
-      <div className="hidden lg:flex w-[42%] bg-slate-900 text-white flex-col justify-between p-12 relative overflow-hidden"
+      <div className="flex flex-1 flex-col lg:flex-row">
+      {/* Visual Left Branding Panel */}
+      <div className="flex w-full min-h-[300px] lg:min-h-0 lg:w-[42%] bg-slate-900 text-white flex-col justify-between p-6 sm:p-8 lg:p-12 relative overflow-hidden"
            style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' }}>
         {/* Subtle glowing elements */}
         <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] rounded-full bg-blue-600/10 blur-[120px]" />
@@ -75,9 +75,9 @@ export default function LoginPage() {
         </div>
 
         {/* CENTER: Chitransh Law Chamber & File Tracking System */}
-        <div className="relative z-10 my-auto text-center space-y-8 px-4 flex flex-col items-center">
+        <div className="relative z-10 my-8 lg:my-auto text-center space-y-5 lg:space-y-8 px-4 flex flex-col items-center">
           {/* Elegant Monogram Logo */}
-          <img src="/logo.jpg" alt="Logo" className="w-16 h-16 object-contain rounded-full border-2 border-white/20 shadow-lg" />
+          <img src="/logo.jpg" alt="Logo" className="w-14 h-14 lg:w-16 lg:h-16 object-contain rounded-full border-2 border-white/20 shadow-lg" />
 
           {/* <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center  mb-2 relative group">
             <div className="absolute inset-0.5 rounded-full bg-slate-950 flex items-center justify-center">
@@ -88,7 +88,7 @@ export default function LoginPage() {
 
           <div className="space-y-3">
             <p className="text-[11px] text-blue-400 font-bold uppercase tracking-[0.25em] leading-none">Advocates & Legal Consultants</p>
-            <h2 className="text-4xl font-extrabold tracking-tight text-white leading-tight font-sans drop-shadow-sm">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight font-sans drop-shadow-sm">
               Chitransh Law Chamber
             </h2>
           </div>
@@ -112,7 +112,7 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <div className="relative z-10 flex items-center justify-between text-xs text-slate-500 border-t border-slate-800/60 pt-4">
+        <div className="relative z-10 hidden sm:flex items-center justify-between text-xs text-slate-500 border-t border-slate-800/60 pt-4">
           <p>© {new Date().getFullYear()} Kripanidhi Legal &amp; Chitransh Law Chamber</p>
           <span className="font-mono">v1.1.0</span>
         </div>
@@ -120,17 +120,6 @@ export default function LoginPage() {
 
       {/* Interactive Form Panel */}
       <div className="flex-1 flex flex-col justify-center items-center px-6 py-12 lg:px-20">
-        {/* Mobile Header Branding */}
-        <div className="lg:hidden flex items-center gap-3 mb-10 text-center">
-          <div className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm p-1.5">
-            <img src="/logo.jpg" alt="Logo" className="w-6 h-6 object-contain" />
-          </div>
-          <div className="text-left">
-            <p className="font-bold text-slate-900 leading-tight">Kripanidhi Legal</p>
-            <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Partner Portal</p>
-          </div>
-        </div>
-
         <div className="w-full max-w-sm space-y-7">
           <div className="space-y-2">
             <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Sign in to your account</h1>
