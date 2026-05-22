@@ -100,7 +100,7 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 fade-in">
           <StatCard
             icon={Files}
-            label="Total Registry Files"
+            label="Total Files"
             value={stats?.total}
             colorClass="bg-blue-50 text-blue-600 border border-blue-100"
             sub="Registered overall"
@@ -179,10 +179,10 @@ export default function AdminDashboard() {
           <div className="p-5 border-b border-slate-100 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-blue-600 animate-pulse" />
-              <h2 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Recent Registry Cases</h2>
+              <h2 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Recent Files</h2>
             </div>
             <Link to="/admin/files" className="btn btn-ghost btn-sm text-blue-600 hover:text-blue-700 font-semibold gap-1">
-              Registry <ArrowRight className="w-3.5 h-3.5" />
+              SearchFiles <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
           <div className="table-wrapper rounded-none border-0 overflow-x-auto">
@@ -201,7 +201,7 @@ export default function AdminDashboard() {
                   <tr>
                     <td colSpan={5} className="text-center text-slate-400 py-12">
                       <Files className="w-8 h-8 mx-auto text-slate-200 mb-2" />
-                      <p className="text-sm font-medium text-slate-500">No recent legal cases mapped.</p>
+                      <p className="text-sm font-medium text-slate-500">No recent files mapped.</p>
                     </td>
                   </tr>
                 ) : (

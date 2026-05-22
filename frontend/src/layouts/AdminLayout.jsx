@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Files, Users, BarChart3,
-  Menu, X, Search, Building2,
+  Menu, X, Search
 } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { getInitials, ROLE_LABELS } from '../lib/constants';
@@ -11,7 +11,7 @@ import LegalFooter from '../components/LegalFooter';
 
 const adminNavItems = [
   { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
-  { to: '/admin/files', icon: Files, label: 'All Files' },
+  { to: '/admin/files', icon: Files, label: 'Search Files' },
   { to: '/admin/customers', icon: Users, label: 'Customers' },
   { to: '/admin/analytics', icon: BarChart3, label: 'Analytics' },
 ];
@@ -95,7 +95,7 @@ export default function AdminLayout() {
           </div>
           <div>
             <p className="text-sm font-bold text-slate-900 leading-tight">Kripanidhi Legal</p>
-            <p className="text-[10px] text-slate-500 font-semibold leading-tight">& Chitransh Law Services</p>
+            <p className="text-[10px] text-slate-500 font-semibold leading-tight">& Chitransh Law Chamber</p>
             <p className="text-xs text-slate-400">Legal & Banking Partner</p>
           </div>
         </div>

@@ -18,7 +18,7 @@ const REFRESH_COOKIE_OPTS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
+  maxAge: 14 * 24 * 60 * 60 * 1000, // 14 days in ms
   path: '/api/auth',              // cookie only sent to auth endpoints
 };
 
@@ -33,10 +33,25 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+//refresh token endpoint needs a separate limiter to allow more frequent refreshes without blocking logins
+const refreshLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 min
+  max: 30,
+  message: {
+    success: false,
+    error: {
+      message: 'Too many refresh requests, try again later',
+      code: 'RATE_LIMITED'
+    }
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Cooldown rate limiter for sending access link (magic-link) to prevent abuse
 const magicLinkLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 2, // Limit each IP/user to 2 requests per minute
+  max: 5, // Limit each IP/user to 5 requests per minute
   message: { success: false, error: { message: 'Please wait at least a minute before requesting another access link', code: 'RATE_LIMITED' } },
   standardHeaders: true,
   legacyHeaders: false,
@@ -59,7 +74,7 @@ const generateTokens = (userId, role) => {
 
 const storeRefreshToken = async (userId, refreshToken, req) => {
   const hash = crypto.createHash('sha256').update(refreshToken).digest('hex');
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
 
   await supabase.from('refresh_tokens').insert({
     user_id: userId,
@@ -196,7 +211,7 @@ router.post(
 
 // ── POST /api/auth/refresh ────────────────────────────────────────
 // Reads the refresh token from httpOnly cookie (preferred) or body (fallback)
-router.post('/refresh', authLimiter, async (req, res, next) => {
+router.post('/refresh', refreshLimiter, async (req, res, next) => {
   try {
     // Primary: read from httpOnly cookie; fallback: body (legacy clients)
     const refreshToken = req.cookies?.refresh_token || req.body?.refreshToken;
