@@ -122,11 +122,13 @@ export default function SignupPage() {
         {/* CENTER: Chitransh Law Chamber & File Tracking System */}
         <div className="relative z-10 my-auto text-center space-y-8 px-4 flex flex-col items-center">
           {/* Elegant Monogram Logo */}
-          <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-[0_0_40px_rgba(37,99,235,0.25)] border border-blue-400/20 mb-2 relative group">
+          {/* <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-[0_0_40px_rgba(37,99,235,0.25)] border border-blue-400/20 mb-2 relative group">
             <div className="absolute inset-0.5 rounded-full bg-slate-950 flex items-center justify-center">
               <span className="font-serif text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-300 to-blue-200 tracking-wider">CLC</span>
             </div>
-          </div>
+          </div> */}
+          <img src="/logo.jpg" alt="Logo" className="w-16 h-16 object-contain rounded-full border-2 border-white/20 shadow-lg" />
+          
 
           <div className="space-y-3">
             <p className="text-[11px] text-blue-400 font-bold uppercase tracking-[0.25em] leading-none">Advocates & Legal Consultants</p>
